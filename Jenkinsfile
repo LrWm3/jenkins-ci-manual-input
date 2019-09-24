@@ -128,7 +128,7 @@ pipeline {
                 // TODO - DIY milestones and locks, somehow? to prevent old jobs from building?
                 script {
                   env.DO_CANARY_RELEASE = input (
-                      parameters: [choice(name: 'DO_CANARY_RELEASE', choices: ['yes', 'no'], description: 'Deploy this build in-line to canary')]
+                      parameters: [choice(name: 'DO_CANARY_RELEASE', choices: ['yes', 'no'], description: 'Do not abort. \'yes\' to deploy to canary')]
                   )
                 }
               }
@@ -172,7 +172,7 @@ pipeline {
               steps {
                 script {
                   env.DO_TAG = input (
-                      parameters: [string(name: 'DO_TAG', defaultValue: 'do not release', description: 'Enter "release" to tag and deploy this revision to production, anything else not formally release (do not abort)')]
+                      parameters: [string(name: 'DO_TAG', defaultValue: 'do not release', description: 'Do not abort. Enter "release" to tag and deploy this revision to production, anything else not formally release')]
                   )
           
                 }
@@ -198,6 +198,7 @@ pipeline {
         }
         stage('Production') {
           // Execute if this is tagged automatically
+          // Will likely want to deploy this EVERYWHERE on top of existing services; I think?
           stages('Production') {
             stage('Production: Release?') {
               agent none
