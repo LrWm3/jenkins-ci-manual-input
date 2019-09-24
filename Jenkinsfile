@@ -5,6 +5,17 @@ pipeline {
   // The question mark naming convention is helpful to show you which
   //  approval stage belongs to which work stage.
   stages {
+    stage("Environment") {
+      steps {
+        // Initialize these values to avoid errors if they are not set
+        script {
+          env.DO_STAGING_RELEASE = "no"
+          env.DO_CANARY_RELEASE = "no"
+          env.DO_PRODUCTION_RELEASE = "no"
+          env.DO_TAG = "no"
+        }
+      }
+    }
     stage("Release?") {
       parallel {
         stage('Staging') {
@@ -160,8 +171,8 @@ pipeline {
               }
               steps {
                 script {
-                  env.DO_PRODUCTION_RELEASE = input (
-                      parameters: [string(name: 'DO_PRODUCTION_RELEASE', defaultValue: 'do not release', description: 'Enter "release" to tag and deploy this revision to production, anything else not formally release (do not abort)')]
+                  env.DO_TAG = input (
+                      parameters: [string(name: 'DO_TAG', defaultValue: 'do not release', description: 'Enter "release" to tag and deploy this revision to production, anything else not formally release (do not abort)')]
                   )
           
                 }
@@ -172,13 +183,13 @@ pipeline {
               agent any
               when {
                 beforeAgent true
-                environment name: 'DO_PRODUCTION_RELEASE', value: 'yes'
+                environment name: 'DO_TAG', value: 'yes'
                 branch "master"
               }
               steps {
                   // TODO - milestones and locks, somehow?
                   // Now do the actual work here.
-                  sh([script:"echo \"DO_PRODUCTION_RELEASE=$DO_PRODUCTION_RELEASE\"", label: 'Echo $DO_PRODUCTION_RELEASE'])
+                  sh([script:"echo \"DO_TAG=$DO_TAG\"", label: 'Echo $DO_TAG'])
                   sh([script:"echo \"I am doing the tag + release procedure for the project!\"", label: 'Tagging and releasing '])
                 // }
               }
@@ -205,7 +216,7 @@ pipeline {
                 script {
                   // Automatically release, this is a tag
                   // Placeholder in case we want more complex logic later
-                  env.DO_PROD_RELEASE = "release"
+                  env.DO_PRODUCTION_RELEASE = "release"
           
                 }
                 // TODO - milestones and locks, somehow?
@@ -218,11 +229,11 @@ pipeline {
                 // Evaluate the 'when' directive before allocating the agent.
                 beforeAgent true
                 // Only execute the step when the release has been approved.
-                environment name: 'DO_PROD_RELEASE', value: 'yes'
+                environment name: 'DO_PRODUCTION_RELEASE', value: 'yes'
               }
               steps {
                 // TODO - milestones and locks, somehow?
-                  sh([script:"echo \"DO_PROD_RELEASE=$DO_PROD_RELEASE\"", label: 'Echo $DO_PROD_RELEASE'])
+                  sh([script:"echo \"DO_PRODUCTION_RELEASE=$DO_PRODUCTION_RELEASE\"", label: 'Echo $DO_PRODUCTION_RELEASE'])
               }
             }
           }
