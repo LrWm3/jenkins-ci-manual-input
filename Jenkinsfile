@@ -1,3 +1,9 @@
+//
+// Investigating parallel builds
+//
+// see:
+//   jenkins-job-dsl: https://wiki.jenkins.io/display/JENKINS/Job+DSL+Plugin
+//   ^^ i think i want to use this ^^
 pipeline {
   // We want to use agents per stage to avoid blocking our build agents
   // while we are waiting for user input.
