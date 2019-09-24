@@ -183,7 +183,7 @@ pipeline {
               agent any
               when {
                 beforeAgent true
-                environment name: 'DO_TAG', value: 'yes'
+                environment name: 'DO_TAG', value: 'release'
                 branch "master"
               }
               steps {
